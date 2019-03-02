@@ -1,33 +1,37 @@
-%define	libva_req	1.6.1
+#
+# Conditional build:
+%bcond_with	drm	# DRM backend, not used as of 1.0.2 (grep for HAVE_VA_DRM, USE_DRM)
+%bcond_with	wayland	# Wayland backend, not used as of 1.0.2 (grep for HAVE_VA_WAYLAND, USE_WAYLAND)
+
+%define	libva_ver	1.6.1
 Summary:	Codecs for VA Intel Driver
 Summary(pl.UTF-8):	Kodeki dla sterownika VA Intel
 Name:		libva-driver-intel-hybrid
-Version:	1.0.1
+Version:	1.0.2
 Release:	1
 License:	MIT
 Group:		Libraries
-Source0:	https://github.com/01org/intel-hybrid-driver/archive/%{version}.tar.gz
-# Source0-md5:	5800e38acf4590543019f406bdfc46eb
+#Source0Download: https://github.com/01org/intel-hybrid-driver/releases
+Source0:	https://github.com/01org/intel-hybrid-driver/archive/%{version}/%{name}-%{version}.tar.gz
+# Source0-md5:	05e97e6948963f08eb14a4a8f68bcf69
 URL:		https://github.com/01org/intel-hybrid-driver
-# for wayland, not used in 1.0.1
-#BuildRequires:	EGL-devel
+%{?with_wayland:BuildRequires:	EGL-devel}
 BuildRequires:	autoconf >= 2.57
 BuildRequires:	automake >= 1:1.9
-BuildRequires:	libcmrt-devel >= 0.10.0
-BuildRequires:	libdrm-devel >= 2.4.45
+# pkgconfig(libcmrt) >= 0.10.0, but cmrt <= 1.0.5 provided cmrt.pc instead of libcmrt.pc
+BuildRequires:	libcmrt-devel >= 1.0.6
+%{?with_drm:BuildRequires:	libdrm-devel >= 2.4.45}
 BuildRequires:	libtool
-BuildRequires:	libva-devel >= %{libva_req}
-BuildRequires:	libva-drm-devel >= %{libva_req}
-# for wayland, not used in 1.0.1
-#BuildRequires:	libva-wayland-devel >= %{libva_req}
-BuildRequires:	libva-x11-devel >= %{libva_req}
+BuildRequires:	libva-devel >= %{libva_ver}
+%{?with_drm:BuildRequires:	libva-drm-devel >= %{libva_ver}}
+%{?with_wayland:BuildRequires:	libva-wayland-devel >= %{libva_ver}}
+BuildRequires:	libva-x11-devel >= %{libva_ver}
 BuildRequires:	pkgconfig
 # API version, not just package version
 BuildRequires:	pkgconfig(libva) >= 0.38
-# wayland-client, not used in 1.0.1
-#BuildRequires:	wayland-devel
-Requires:	libdrm >= 2.4.45
-Requires:	libva >= %{libva_req}
+%{?with_wayland:BuildRequires:	wayland-devel}
+%{?with_drm:Requires:	libdrm >= 2.4.45}
+Requires:	libva >= %{libva_ver}
 Requires:	libva-driver-intel >= 1.6.1
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
