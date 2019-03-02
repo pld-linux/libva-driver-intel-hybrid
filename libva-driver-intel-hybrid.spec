@@ -33,6 +33,7 @@ BuildRequires:	pkgconfig(libva) >= 0.38
 %{?with_drm:Requires:	libdrm >= 2.4.45}
 Requires:	libva >= %{libva_ver}
 Requires:	libva-driver-intel >= 1.6.1
+ExclusiveArch:	%{ix86} %{x8664} x32
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
